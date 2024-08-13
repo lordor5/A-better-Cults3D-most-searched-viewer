@@ -2,185 +2,129 @@
 import Layout from "../layouts/Layout.astro";
 import puppeteer from "puppeteer";
 
-// const browser = await puppeteer.launch();
-// const page = await browser.newPage();
+const browser = await puppeteer.launch();
+const page = await browser.newPage();
 
-// await page.goto("https://cults3d.com/es/pages/busquedas-de-tendencia");
-// await page.setViewport({ width: 1080, height: 1024 });
+await page.goto("https://cults3d.com/es/pages/busquedas-de-tendencia");
+await page.setViewport({ width: 1080, height: 1024 });
 
-// const linkTexts = await page.evaluate(() => {
-//   // Seleccionar todos los <ol> en la página.
-//   const orderedLists = document.querySelectorAll("ol");
+const data = await page.evaluate(() => {
+  // Seleccionar todos los <ol> en la página.
+  const orderedLists = document.querySelectorAll("ol");
 
-//   // Convertir NodeList en un array y mapear para obtener los textos de cada <li>.
-//   const listsArray = Array.from(orderedLists).map((ol) => {
-//     // Seleccionar todos los <li> dentro del <ol> y obtener sus textos.
-//     return Array.from(ol.querySelectorAll("li")).map(
-//       (li) => li.textContent?.trim() || ""
-//     );
-//   });
+  // Convertir NodeList en un array y mapear para obtener los textos de cada <li>.
+  const listsArray = Array.from(orderedLists).map((ol) => {
+    // Seleccionar todos los <li> dentro del <ol> y obtener sus textos.
+    return Array.from(ol.querySelectorAll("li")).map(
+      (li) => li.textContent?.trim() || ""
+    );
+  });
 
-//   return listsArray;
-// });
-// await browser.close();
-//console.log(linkTexts);
+  return listsArray;
+});
 
-const data = [
-  [
-    "dragon",
-    "warhammer",
-    "40k",
-    "star wars",
-    "vase",
-    "anime",
-    "flexi",
-    "harry potter",
-    "one piece",
-    "Pokemon",
-    "lego",
-    "skull",
-    "cat",
-    "keychain",
-    "dragon ball",
-    "dnd",
-    "rc",
-    "godzilla",
-    "warhammer 40k",
-    "funko",
-    "ork",
-    "tau",
-    "lamp",
-    "spiderman",
-    "gun",
-    "car",
-    "naruto",
-    "zelda",
-    "planter",
-    "helmet",
-    "minecraft",
-    "stitch",
-    "diorama",
-    "mario",
-    "sword",
-    "fortnite",
-    "playmobil",
-    "battletech",
-    "maceta",
-    "ring",
-    "Mask",
-    "Batman",
-    "chess",
-    "oldhammer",
-    "figure",
-    "cnc",
-    "pen holder",
-    "bmw",
-    "Goku",
-    "horse",
-  ],
-  [
-    "dragon",
-    "warhammer",
-    "40k",
-    "star wars",
-    "anime",
-    "vase",
-    "easter",
-    "flexi",
-    "dragon ball",
-    "harry potter",
-    "skull",
-    "cat",
-    "lego",
-    "pokemon",
-    "one piece",
-    "keychain",
-    "dnd",
-    "lamp",
-    "warhammer 40k",
-    "naruto",
-    "rc",
-    "spiderman",
-    "gun",
-    "tau",
-    "helmet",
-    "car",
-    "zelda",
-    "mario",
-    "minecraft",
-    "funko",
-    "fortnite",
-    "diorama",
-    "ork",
-    "ring",
-    "planter",
-    "stitch",
-    "mask",
-    "sword",
-    "godzilla",
-    "playmobil",
-    "battletech",
-    "chess",
-    "ostern",
-    "space marines",
-    "dragonxcults",
-    "oldhammer",
-    "goku",
-    "disney",
-    "bmw",
-    "batman",
-  ],
-];
+// Scrape the titles
+const titles = await page.evaluate(() => {
+  // Get all the title elements
+  const titleElements = document.querySelectorAll("h1");
+  const titlesArray: Array<string> = [];
+  titleElements.forEach((title) => {
+    titlesArray.push(title.innerText);
+  });
+  return titlesArray;
+});
 
-function OrderData(data: Array<string>) {
+// Extract month and year from the titles
+const monthYearArray = titles
+  .map((title) => {
+    // Match month and year
+    const match = title.match(/- (\w+) (\d{4}) -/);
+    if (match) {
+      return match[1] + match[2];
+    }
+    return null;
+  })
+  .filter((item) => item !== null); // Filter out any null values
+
+await browser.close();
+
+// function refineData(data: Array<Array<string>>) {
+//   let newData: Array<Array<string>> = [];
+//   for (let i = 0; i < data.length; i++) {
+//     for (let j = 0; j < data[i].length; j++) {
+//       newData[i].push(data[i][j].toLowerCase());
+//     }
+//   }
+// }
+
+function getKeywords(data: Array<Array<string>>) {
   let keywords: Array<string> = [];
-  let position: Array<Array<number>> = [];
-
-  // lee el primer array de keywords y añade todos los keywords a un array de keywords y el ranking a otro array
   for (let i = 0; i < data.length; i++) {
-    keywords.push(data[i]);
-    position.push([i]);
+    //recorre los meses en busca de nuevas palabras
+    for (let j = 0; j < data[i].length; j++) {
+      //recorre los datos de cada mes
+      let esta = false;
+      for (let k = 0; k < keywords.length; k++) {
+        //recorre las palabras en busca de coincidencias
+        if (data[i][j].toLowerCase() === keywords[k]) {
+          esta = true;
+        }
+      }
+      //console.log(data[i][j].toLowerCase());
+      if (!esta) {
+        keywords.push(data[i][j].toLowerCase());
+      }
+    }
   }
 
-  const info = {
-    keywords: keywords,
-    position: position,
-  };
-  return info;
+  return keywords;
 }
 
-const displayData = OrderData(data[0]);
+function populatePositions(keywords: Array<string>) {
+  let position: Array<Array<number>> = [];
 
-//console.log(displayData);
+  for (let i = 0; i < keywords.length; i++) {
+    position.push([]);
+  }
+  return position;
+}
 
-const datas = [
-  [1, 2, 4, 5, 1, 3, 5, 6, 2, 4, 6, 2],
-  [2, 3, 5, 4, 2, 4, 3, 5, 1, 7, 8, 9],
-];
-const labels = ["dragon", "goku"];
+function OrderData(
+  keywords: Array<string>,
+  positions: Array<Array<number>>,
+  data: Array<string>,
+  mes: number
+) {
+  for (let i = 0; i < data.length; i++) {
+    //Recorrer los datos
+    for (let j = 0; j < positions.length; j++) {
+      // recorrer las keywords
+      if (data[i].toLowerCase() === keywords[j]) {
+        //cuando los datos y la keyword coinciden, añadir en el mes la posición
+        if (i + 1 < positions[j][mes] || positions[j][mes] === undefined) {
+          positions[j][mes] = i + 1;
+        }
+      }
+    }
+  }
+  return positions;
+}
 
+const keywords = getKeywords(data);
+let positions = populatePositions(keywords);
+
+for (let i = 0; i < data.length; i++) {
+  positions = OrderData(keywords, positions, data[i], i);
+}
+
+const labels = keywords;
+const datas = positions;
 let datasets = [];
 for (var i = 0; i < labels.length; i++) {
   datasets.push({ label: labels[i], data: datas[i] });
 }
 
-console.log(datasets);
-// const data = [
-//   [1, 2, 4, 5, 1, 3, 5, 6, 2, 4, 6, 2],
-//   [2, 3, 5, 4, 2, 4, 3, 5, 1, 7, 8, 9],
-// ];
-// const labels = ["dragon", "goku"];
-
-// const datasets = [
-//   {
-//     label: labels[0],
-//     data: data[0],
-//   },
-//   {
-//     label: labels[1],
-//     data: data[1],
-//   },
-// ];
+datasets = datasets.slice(0, 20);
 ---
 
 <Layout title="Welcome to Astro.">
@@ -190,50 +134,14 @@ console.log(datasets);
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <script is:inline define:vars={{ datasets }}>
+  <script is:inline define:vars={{ datasets, monthYearArray }}>
     document.addEventListener("DOMContentLoaded", function () {
-      const ctx = document.getElementById("myChart");
+      const ctx = document.getElementById("myChart").getContext("2d");
 
-      //   //   const labels = displayData.keywords;
-      //   //   const data = displayData.positions;
-      //   const data = [
-      //     [1, 2, 4, 5, 1, 3, 5, 6, 2, 4, 6, 2],
-      //     [2, 3, 5, 4, 2, 4, 3, 5, 1, 7, 8, 9],
-      //   ];
-      //   const labels = ["dragon", "goku"];
-
-      //   //   let datasets = [];
-      //   //   for (var i = 0; i < labels.length; i++) {
-      //   //     datasets.push({ label: labels[i], data: data[i] });
-      //   //   }
-
-      //   const datasets = [
-      //     {
-      //       label: labels[0],
-      //       data: data[0],
-      //     },
-      //     {
-      //       label: labels[1],
-      //       data: data[1],
-      //     },
-      //   ];
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec",
-          ],
+          labels: monthYearArray,
           datasets: datasets,
         },
       });
