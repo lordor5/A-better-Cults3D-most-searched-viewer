@@ -9,51 +9,74 @@ export function orderDataset(dataset: Array<Dataset>) {
   let newDataset: Array<Dataset> = [];
 
   for (let i = 0; i < dataset.length; i++) {
-    let average = Math.round(dataset[i].average);
+    let average = Math.round(dataset[i].average * 10);
 
     console.log(newDataset, average);
 
     if (newDataset[average] === undefined) {
       newDataset[average] = dataset[i];
     } else if (dataset[i].average > newDataset[average].average) {
+      //indica el orden de búsqueda (abajo)
       let pos = 0;
 
-      for (let j = 0; j < dataset.length; j++) { // busca el hueco por encima del average completo
-        if (newDataset[average+j]) {  // si existe, busca por si hay mas datos después 
-          for (let k = j; k < dataset.length; k++) {
-            if (newDataset[average+k] >) { // si encuentra los datos, campara para ver cual es el mas grande
-
-            }
-          }
-        }
-        else if (dataset[i].average > newDataset[average + j].average) {
+      for (let j = 0; j < newDataset.length; j++) {
+        if (!newDataset[average + j]) {
+          pos = j;
+          break;
+        } else if (dataset[i].average < newDataset[average + j].average) {
+          console.log(dataset[i].average, "<", newDataset[average + j].average);
           pos = j;
           break;
         }
       }
 
+      // for (let j = 0; j < dataset.length; j++) { // busca el hueco por encima del average completo
+      //   if (newDataset[average+j]) {  // si existe, busca por si hay mas datos después
+      //     for (let k = j; k < dataset.length; k++) {
+      //       if (newDataset[average+k] >) { // si encuentra los datos, campara para ver cual es el mas grande
+
+      //       }
+      //     }
+      //   }
+      //   else if (dataset[i].average > newDataset[average + j].average) {
+      //     pos = j;
+      //     break;
+      //   }
+      // }
+
       //console.log(dataset[i].average, ">", newDataset[average + pos].average);
       newDataset.splice(average + pos, 0, dataset[i]);
     } else if (dataset[i].average < newDataset[average].average) {
+      //indica el orden de búsqueda (arriba)
+      // let pos = 0;
+      // while (
+      //   //newDataset[average + pos] &&
+      //   dataset[i].average > newDataset[average + pos].average &&
+      //   pos > -1000
+      // ) {
+      //   pos--;
+      // }
+
       let pos = 0;
-      while (
-        //newDataset[average + pos] &&
-        dataset[i].average > newDataset[average + pos].average &&
-        pos > -1000
-      ) {
-        pos--;
+
+      for (let j = 0; j < newDataset.length; j++) {
+        if (newDataset[average + j]) {
+          pos = j;
+          break;
+        }
       }
+
       //console.log(dataset[i].average, "<", newDataset[average + pos].average);
-      newDataset.splice(average + pos, 0, dataset[i]);
+      newDataset.splice(average - pos, 0, dataset[i]);
     }
   }
 
-  for (let i = 0; i < newDataset.length; i++) {
-    if (!newDataset[i]) {
-      newDataset.splice(i, 1);
-      i--;
-    }
-  }
+  // for (let i = 0; i < newDataset.length; i++) {
+  //   if (!newDataset[i]) {
+  //     newDataset.splice(i, 1);
+  //     i--;
+  //   }
+  // }
   return newDataset;
 }
 
