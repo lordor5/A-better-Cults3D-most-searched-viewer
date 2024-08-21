@@ -1,12 +1,6 @@
 import { scrapData, getNumberOfModels } from "../components/scraper.ts";
 import { insertionSort } from "./orderDataset.ts";
-import {
-  getKeywords,
-  populatePositions,
-  OrderData,
-  calculateAverage,
-  createData,
-} from "./functions.ts";
+import { getKeywords, calculateAverage, createData } from "./functions.ts";
 
 interface Dataset {
   label: string;

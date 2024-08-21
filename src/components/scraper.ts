@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { data, monthYearArray } from "../content/data.json";
+import { data, monthYearArray } from "../content/data/data.json";
 const keywordlist = data;
 const months = monthYearArray;
 

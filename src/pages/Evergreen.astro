@@ -2,13 +2,6 @@
 import Layout from "../layouts/Layout.astro";
 import { getDataset_average } from "../components/getDataset.ts";
 
-interface Dataset {
-  label: string;
-  data: Array<number | null>;
-  average: number;
-  emptySlots: number;
-  numberOfModels: number;
-}
 
 interface ChartDataset {
   label: string;

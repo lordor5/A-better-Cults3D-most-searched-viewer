@@ -1,11 +1,3 @@
-interface Dataset {
-  label: string;
-  data: Array<number | null | undefined>;
-  average: number;
-  emptySlots: number;
-  numberOfModels: number;
-}
-
 // Devuelve un array de keywords diferentes
 export function getKeywords(data: Array<Array<string>>) {
   let keywords: Array<string> = [];
@@ -107,11 +99,3 @@ export function calculateAverage(dataset: Array<number | null>) {
   const ret = { average, emptySlots };
   return ret;
 }
-
-const testData = {
-  label: "string",
-  data: [1, 2, 3, 4, 5, 6, , , , 7, 8, 9, 10],
-  average: 0,
-  emptySlots: 0,
-  numberOfModels: 0,
-};

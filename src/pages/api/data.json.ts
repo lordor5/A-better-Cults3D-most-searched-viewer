@@ -1,8 +1,7 @@
 // src/pages/data.json.ts
-import type { APIContext } from "astro";
 import { scrapData } from "../../components/scraper";
 
-export async function GET({ request }: APIContext) {
+export async function GET() {
   // Define the JSON data
   const jsonData = await scrapData();
 
