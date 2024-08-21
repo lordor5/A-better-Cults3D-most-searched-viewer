@@ -1,0 +1,124 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getDataset_average_numberOfModels } from "../components/getDataset.ts";
+import { insertionSort } from "../components/orderDataset.ts";
+
+interface Dataset {
+  label: string;
+  data: Array<number | null>;
+  average: number;
+  emptySlots: number;
+  numberOfModels: number;
+}
+
+interface ChartDataset {
+  label: string;
+  data: Array<{ x: number; y: number; r: number }>;
+  backgroundColor?: string;
+  borderColor?: string;
+}
+
+let datasets: Array<Dataset> = await getDataset_average_numberOfModels();
+
+
+datasets = insertionSort(datasets);
+
+datasets = datasets.splice(0, datasets.length /2);
+
+let formatedData: Array<ChartDataset> = [];
+for (let i = 0; i < datasets.length; i++) {
+  formatedData.push({
+    label: "",
+    data: [{ x: 0, y: 0, r: 0 }],
+  });
+
+  formatedData[i].label = datasets[i].label;
+  formatedData[i].data[0].x = datasets[i].average;
+  formatedData[i].data[0].y = datasets[i].emptySlots;
+  formatedData[i].data[0].r = datasets[i].numberOfModels / 1000;
+}
+---
+
+<Layout title="Top 10 categories with number of models" desc="Graph with the most searched keywords and the number of 3D models they have on cults 3D">
+  <div>
+    <canvas id="myChart"></canvas>
+  </div>
+
+
+  <div>
+    <section>
+      <h2>Keywords with the most amount of models</h2>
+      <p>
+        This are the most searched keywords ordered by the number of 3D models they already have.
+        <br />
+          Here you can find categories with a good amount of searches, 
+          good niches to start uploading models to. You want to look for 
+          keywords on the left bottom corner and the smallest bubble as 
+          they are the ones with the top position (left), more evergreen (bottom) 
+          and least amount of models (little bubble).
+        <br/>
+        If nothing convinces you, search on the least number of models page
+      </p>
+    </section>
+  </div>
+
+  <div class="grid">
+    {
+      datasets.map((dataset) => (
+        <div class="dataset">
+          <p>Keyword: {dataset.label}</p>
+          <p>Average {dataset.average}</p>
+          <p>Empty slots {dataset.emptySlots}</p>
+          <p>Number of models: {dataset.numberOfModels}</p>
+          <p>Data {JSON.stringify(dataset.data)}</p>
+          <p>Link: <a target="_blank" rel="noopener noreferrer" href=`https://cults3d.com/en/search?q=skull${dataset.label}` >{dataset.label}</a>
+          </p>
+        </div>
+      ))
+    }
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script is:inline define:vars={{ formatedData }}>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById("myChart").getContext("2d");
+
+      new Chart(ctx, {
+        type: "bubble",
+        data: {
+          datasets: formatedData,
+        },
+        options: {
+          scales: {
+            x: {
+              type: "linear",
+              position: "bottom",
+              title: {
+                display: true,
+                text: "Average position (lower is better nº1 best)",
+              },
+            },
+            y: {
+              type: "linear",
+              position: "left",
+              title: {
+                display: true,
+                text: "Number of times the keyword wasn't on the top (lower is better, more evergreen)",
+              },
+            },
+          },
+        },
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          title: {
+            display: true,
+            text: "Chart.js Bubble Chart",
+          },
+        },
+      });
+    });
+  </script>
+</Layout>

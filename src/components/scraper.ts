@@ -1,6 +1,15 @@
 import puppeteer from "puppeteer";
+import { data, monthYearArray } from "../content/data.json";
+const keywordlist = data;
+const months = monthYearArray;
 
 export async function scrapData() {
+  if (import.meta.env.MODE === "development") {
+    console.log("You're in development mode");
+    const salida = { data: keywordlist, monthYearArray: months };
+    return salida;
+  }
+
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
@@ -50,4 +59,38 @@ export async function scrapData() {
   const salida = { data: data, monthYearArray: monthYearArray };
 
   return salida;
+}
+
+export async function getNumberOfModels(
+  keywords: Array<string>
+): Promise<Array<number>> {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let items: Array<number> = [];
+  for (let i = 0; i < keywords.length; i++) {
+    // Go to the specified URL
+    const url = `https://cults3d.com/es/b%C3%BAsqueda?q=${keywords[i]}`;
+    await page.goto(url, { waitUntil: "domcontentloaded" });
+    // Extract the meta title content
+    const metaTitle = await page.title();
+
+    // Extract the number of items from the meta title
+    const regex = /(\d+[.,]?\d*)\s?k?/;
+    const match = metaTitle.match(regex);
+
+    if (match && match[1]) {
+      // Replace ',' or '.' with a decimal point and convert the number
+      let numberOfItems = match[1].replace(",", ".");
+
+      // If the number is in thousands, multiply by 1000
+      if (metaTitle.includes("k")) {
+        items[i] = parseFloat(numberOfItems) * 1000;
+      } else {
+        items[i] = parseFloat(numberOfItems);
+      }
+    }
+  }
+  await browser.close();
+
+  return items;
 }

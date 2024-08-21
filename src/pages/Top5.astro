@@ -1,8 +1,94 @@
 ---
-import Graph from "../components/graph.astro";
 import Layout from "../layouts/Layout.astro";
+import { getDataset_average } from "../components/getDataset.ts";
+
+interface Dataset {
+  label: string;
+  data: Array<number | null>;
+  average: number;
+  emptySlots: number;
+  numberOfModels: number;
+}
+
+interface ChartDataset {
+  label: string;
+  data: Array<number | null | undefined>;
+  fill?: boolean;
+  borderColor?: string;
+  tension?: number;
+}
+
+let { datasets, monthYearArray } = await getDataset_average();
+
+// for (let i = 0; i < datasets.length; i++) {
+//   if (datasets[i].emptySlots > 0) {
+//     datasets.splice(i, 1);
+//     i--;
+//   }
+// }
+
+datasets = datasets.splice(0, 5);
+
+let formatedData: Array<ChartDataset> = [];
+for (let i = 0; i < datasets.length; i++) {
+  formatedData.push({
+    label: "",
+    data: [],
+  });
+
+  formatedData[i].label = datasets[i].label;
+  formatedData[i].data = datasets[i].data;
+}
 ---
 
-<Layout title="Top 5 categories on cults 3D">
-  <Graph average={100} emptySlots={8} top={5} />
+<Layout title="Top 5 categories on cults 3D" desc="Graph with the top 5 most searched keywords on cults 3D month by month">
+  <div>
+    <canvas id="myChart"></canvas>
+  </div>
+
+  <div>
+    <section>
+      <h2>Top 5 keywords searched on cults 3D</h2>
+      <p>
+        This are the top 5 keywords searched on
+        cults 3D. This graph is a little empty but we can clearly se that in crismas, I'ts worth having some models
+        <br />
+        Same idea as before, don't make a model for a single category, try to find multiples keywords for the same model. 
+
+      </p>
+      <p>
+        Still no ideas? may be with the top 10 categories to find more inspiration.
+      </p>
+    </section>
+  </div>
+
+  <div class="grid">
+    {
+      datasets.map((dataset) => (
+        <div class="dataset">
+          <p>Keyword: {dataset.label}</p>
+          <p>Average {dataset.average}</p>
+          <p>Empty slots {dataset.emptySlots}</p>
+          <p>Data {JSON.stringify(dataset.data)}</p>
+          <p>Link: <a target="_blank" rel="noopener noreferrer" href=`https://cults3d.com/en/search?q=skull${dataset.label}` >{dataset.label}</a>
+          </p>
+        </div>
+      ))
+    }
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script is:inline define:vars={{ formatedData, monthYearArray }}>
+    document.addEventListener("DOMContentLoaded", function () {
+      const ctx = document.getElementById("myChart").getContext("2d");
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: monthYearArray,
+          datasets: formatedData,
+        },
+      });
+    });
+  </script>
 </Layout>
