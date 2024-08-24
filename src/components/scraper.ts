@@ -4,7 +4,7 @@ const keywordlist = data;
 const months = monthYearArray;
 
 export async function scrapData() {
-  if (import.meta.env.MODE === "development") {
+  if (import.meta.env.MODE === "dev?elopment") {
     console.log("You're in development mode");
     const salida = { data: keywordlist, monthYearArray: months };
     return salida;
@@ -13,6 +13,7 @@ export async function scrapData() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
+  //await page.goto("https://cults3d.com/en/pages/trending-searches");
   await page.goto("https://cults3d.com/es/pages/busquedas-de-tendencia");
   await page.setViewport({ width: 1080, height: 1024 });
 
@@ -46,7 +47,8 @@ export async function scrapData() {
   const monthYearArray = titles
     .map((title) => {
       // Match month and year
-      const match = title.match(/- (\w+) (\d{4}) -/);
+      const match = title.match(/- (\w+) (\d{4}) -/); //es
+      //const match = title.match(/• (\w+) (\d{4}) •/); //us
       if (match) {
         return match[1] + match[2];
       }

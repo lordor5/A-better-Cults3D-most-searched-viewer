@@ -35,7 +35,7 @@ for (let i = 0; i < datasets.length; i++) {
 ---
 
 <Layout title="Top 5 categories on cults 3D" desc="Graph with the top 5 most searched keywords on cults 3D month by month">
-  <div>
+  <div class="chart">
     <canvas id="myChart"></canvas>
   </div>
 
@@ -81,6 +81,52 @@ for (let i = 0; i < datasets.length; i++) {
           labels: monthYearArray,
           datasets: formatedData,
         },
+        options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    y: {
+                      type: "linear",
+                      position: "left",
+                      title: {
+                        display: true,
+                        text: "Position (lower is better, nº 1 best)",
+                      },
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        mode: 'nearest',
+                        intersect: false,
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 12
+                        }
+                    }
+                  }}
       });
     });
   </script>

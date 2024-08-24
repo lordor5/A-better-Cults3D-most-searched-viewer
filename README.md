@@ -5,3 +5,5 @@ This is mend to be a simple project, to start exploring the world of web scrapin
 With this tool, you can easily find trends in the most searched words on https://cults3d.com
 
 It should automatically update thanks to github actions so it should always be up to date
+
+https://www.chartjs.org/

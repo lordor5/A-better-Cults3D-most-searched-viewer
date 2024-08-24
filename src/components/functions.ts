@@ -1,3 +1,5 @@
+import { inferRemoteSize } from "astro/assets/utils";
+
 // Devuelve un array de keywords diferentes
 export function getKeywords(data: Array<Array<string>>) {
   let keywords: Array<string> = [];
@@ -72,14 +74,15 @@ export function createData(
   for (let i = 0; i < months.length; i++) {
     for (let j = 0; j < data[i].length; j++) {
       if (data[i][j].toLowerCase() === keyword.toLowerCase()) {
-        orderedData[i] = j + 1;
-        break;
+        if (orderedData[i] ?? 0 < j + 1) {
+          orderedData[i] = j + 1;
+          break;
+        }
       } else {
         orderedData[i] = null;
       }
     }
   }
-
   return orderedData;
 }
 export function calculateAverage(dataset: Array<number | null>) {

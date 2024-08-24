@@ -68,6 +68,7 @@ h1 {
 section {
   max-width: 1000px;
   margin: auto;
+  padding: 1rem;
 }
 
 .grid {
@@ -75,8 +76,17 @@ section {
   grid-template-columns: 1fr 1fr;
   max-width: 1000px;
   margin: auto;
+  max-width: 100vw;
+  overflow: hidden;
 }
-canvas {
-  width: 100%;
-  height: 100%;
+
+.chart {
+  width: 100vw;
+  height: 90vh;
+}
+
+@media (max-width: 850px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
 }

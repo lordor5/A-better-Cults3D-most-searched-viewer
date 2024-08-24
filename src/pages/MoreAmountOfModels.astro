@@ -40,7 +40,7 @@ for (let i = 0; i < datasets.length; i++) {
 ---
 
 <Layout title="Top 10 categories with number of models" desc="Graph with the most searched keywords and the number of 3D models they have on cults 3D">
-  <div>
+  <div class="chart">
     <canvas id="myChart"></canvas>
   </div>
 
@@ -90,6 +90,8 @@ for (let i = 0; i < datasets.length; i++) {
           datasets: formatedData,
         },
         options: {
+          responsive: true,
+          maintainAspectRatio: false,
           scales: {
             x: {
               type: "linear",
@@ -115,7 +117,6 @@ for (let i = 0; i < datasets.length; i++) {
           },
           title: {
             display: true,
-            text: "Chart.js Bubble Chart",
           },
         },
       });
