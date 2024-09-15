@@ -10,7 +10,11 @@ export async function scrapData() {
     return salida;
   }
 
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    protocolTimeout: 30000, // Timeout in milliseconds (30 seconds)
+  });
   const page = await browser.newPage();
 
   //await page.goto("https://cults3d.com/en/pages/trending-searches");
@@ -66,7 +70,11 @@ export async function scrapData() {
 export async function getNumberOfModels(
   keywords: Array<string>
 ): Promise<Array<number>> {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    protocolTimeout: 30000, // Timeout in milliseconds (30 seconds)
+  });
   const page = await browser.newPage();
   let items: Array<number> = [];
   for (let i = 0; i < keywords.length; i++) {
