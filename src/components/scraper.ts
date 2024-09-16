@@ -13,7 +13,7 @@ export async function scrapData() {
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    protocolTimeout: 30000, // Timeout in milliseconds (30 seconds)
+    protocolTimeout: 300000, // Timeout in milliseconds (30 seconds)
   });
   const page = await browser.newPage();
 
@@ -73,7 +73,7 @@ export async function getNumberOfModels(
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    protocolTimeout: 30000, // Timeout in milliseconds (30 seconds)
+    protocolTimeout: 300000, // Timeout in milliseconds (30 seconds)
   });
   const page = await browser.newPage();
   let items: Array<number> = [];
